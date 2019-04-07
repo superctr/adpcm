@@ -4,7 +4,7 @@ ADPCM encoder/decoder.
 
 #### Compiling
 
-	gcc -o adpcm adpcm.c bs_codec.c ct_codec.c oki_codec.c
+	make
 
 #### Usage
 

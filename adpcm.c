@@ -1,6 +1,6 @@
 /*
 	Build with
-	gcc -o adpcm adpcm.c bs_codec.c ct_codec.c oki_codec.c
+	gcc -o adpcm adpcm.c bs_codec.c ct_codec.c oki_codec.c yma_codec.c ymb_codec.c
 */
 
 #include <stdio.h>
@@ -10,7 +10,8 @@
 #include "adpcm_codec.h"
 #include "ct_codec.h"
 #include "oki_codec.h"
-#include "ym_codec.h"
+#include "yma_codec.h"
+#include "ymb_codec.h"
 
 void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 {
@@ -23,7 +24,7 @@ void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 	else if(adpcm_mode == 3)
 		yma_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 4)
-		ym_encode((int16_t*)source,dest,length);
+		ymb_encode((int16_t*)source,dest,length);
 	else
 		exit(-1);
 }
@@ -39,7 +40,7 @@ void decode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 	else if(adpcm_mode == 3)
 		yma_decode(source,(int16_t*)dest,length);
 	else if(adpcm_mode == 4)
-		ym_decode(source,(int16_t*)dest,length);
+		ymb_decode(source,(int16_t*)dest,length);
 	else
 		exit(-1);
 }

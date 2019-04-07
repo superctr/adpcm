@@ -3,7 +3,7 @@
 
 /*
 	Encode and decode algorithms for
-	OKI ADPCM
+	Yamaha ADPCM-A
 	
 	2019 by superctr.
 */
@@ -15,13 +15,13 @@
  * return encoded ADPCM samples in outbuffer.
  * Output buffer should be at least (len/2) elements large.
  */
-void oki_encode(int16_t *buffer,uint8_t *outbuffer,long len);
+void yma_encode(int16_t *buffer,uint8_t *outbuffer,long len);
 
 /**
  * Given ADPCM samples in (buffer), return (len) amount of
  * decoded PCM samples in (outbuffer).
  * Output buffer should be at least (len*2) elements large.
  */
-void oki_decode(uint8_t *buffer,int16_t *outbuffer,long len);
+void yma_decode(uint8_t *buffer,int16_t *outbuffer,long len);
 
 #endif

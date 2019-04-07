@@ -1,6 +1,6 @@
 /*
 	Encode and decode algorithms for
-	OKI ADPCM
+	Yamaha ADPCM-A
 	
 	2019 by superctr.
 */
@@ -13,7 +13,7 @@
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
-static const uint16_t oki_step_table[49] = {
+static const uint16_t yma_step_table[49] = {
 	16, 17, 19, 21, 23, 25, 28, 31,
 	34, 37, 41, 45, 50, 55, 60, 66,
 	73, 80, 88, 97, 107,118,130,143,
@@ -22,13 +22,14 @@ static const uint16_t oki_step_table[49] = {
 	724,796,876,963,1060,1166,1282,1411,1552
 };
 
-static const int8_t oki_adjust_table[8] = {
-	-1,-1,-1,-1,2,4,6,8
+static const int8_t yma_adjust_table[8] = {
+	-1,-1,-1,-1,2,5,7,9
 };
 
-inline int16_t oki_step(uint8_t step, int16_t* history, uint8_t* step_hist)
+// *** Yamaha ADPCM-A ***
+inline int16_t yma_step(uint8_t step, int16_t* history, uint8_t* step_hist)
 {
-	uint16_t step_size = oki_step_table[*step_hist];
+	uint16_t step_size = yma_step_table[*step_hist];
 	int16_t delta = step_size >> 3;
 	if(step & 1)
 		delta += step_size >> 2;
@@ -38,18 +39,19 @@ inline int16_t oki_step(uint8_t step, int16_t* history, uint8_t* step_hist)
 		delta += step_size;
 	if(step & 8)
 		delta = -delta;
-	int16_t out = *history + delta;
-	*history = out = CLAMP(out, -2048, 2047); // Saturate output
-	int8_t adjusted_step = *step_hist + oki_adjust_table[step & 7];
+	int16_t out = (*history + delta) & 0xfff; // No saturation
+	out |= (out & 0x800) ? ~0xfff : 0;
+	*history = out;
+	int8_t adjusted_step = *step_hist + yma_adjust_table[step & 7]; // Different adjust table
 	*step_hist = CLAMP(adjusted_step, 0, 48);
 
 	return out;
 }
 
-inline uint8_t oki_encode_step(int16_t input, int16_t* history, uint8_t *step_hist)
+inline uint8_t yma_encode_step(int16_t input, int16_t* history, uint8_t *step_hist)
 {
 	int bit;
-	uint16_t step_size = oki_step_table[*step_hist];
+	uint16_t step_size = yma_step_table[*step_hist];
 	int16_t delta = input - *history;
 	uint8_t adpcm_sample = (delta < 0) ? 8 : 0;
 	if(delta < 0)
@@ -64,11 +66,11 @@ inline uint8_t oki_encode_step(int16_t input, int16_t* history, uint8_t *step_hi
 		}
 		step_size >>= 1;
 	}
-	oki_step(adpcm_sample,history,step_hist);
+	yma_step(adpcm_sample,history,step_hist);
 	return adpcm_sample;
 }
 
-void oki_encode(int16_t *buffer,uint8_t *outbuffer,long len)
+void yma_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 {
 	long i;
 
@@ -82,7 +84,7 @@ void oki_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 		if(sample < 0x7ff8) // round up
 			sample += 8;
 		sample >>= 4;
-		int step = oki_encode_step(sample, &history, &step_hist);
+		int step = yma_encode_step(sample, &history, &step_hist);
 		if(nibble)
 			*outbuffer++ = buf_sample | (step&15);
 		else
@@ -91,7 +93,7 @@ void oki_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 	}
 }
 
-void oki_decode(uint8_t *buffer,int16_t *outbuffer,long len)
+void yma_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 {
 	long i;
 
@@ -106,7 +108,6 @@ void oki_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 		if(nibble)
 			buffer++;
 		nibble^=4;
-		*outbuffer++ = oki_step(step, &history, &step_hist) << 4;
+		*outbuffer++ = yma_step(step, &history, &step_hist) << 4;
 	}
 }
-

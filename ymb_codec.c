@@ -13,7 +13,7 @@
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
-inline int16_t ym_step(uint8_t step, int16_t* history, int16_t* step_size)
+inline int16_t ymb_step(uint8_t step, int16_t* history, int16_t* step_size)
 {
 	static const int ym_table[8] = {
 		57, 57, 57, 57, 77, 102, 128, 153
@@ -34,7 +34,7 @@ inline int16_t ym_step(uint8_t step, int16_t* history, int16_t* step_size)
 	return newval;
 }
 
-void ym_encode(int16_t *buffer,uint8_t *outbuffer,long len)
+void ymb_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 {
 	long i;
 	int16_t step_size = 127;
@@ -55,11 +55,11 @@ void ym_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 		else
 			buf_sample = (adpcm_sample&15)<<4;
 		nibble^=1;
-		ym_step(adpcm_sample, &history, &step_size);
+		ymb_step(adpcm_sample, &history, &step_size);
 	}
 }
 
-void ym_decode(uint8_t *buffer,int16_t *outbuffer,long len)
+void ymb_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 {
 	long i;
 	
@@ -74,6 +74,6 @@ void ym_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 		if(nibble)
 			buffer++;
 		nibble^=4;
-		*outbuffer++ = ym_step(step, &history, &step_size);
+		*outbuffer++ = ymb_step(step, &history, &step_size);
 	}
 }
