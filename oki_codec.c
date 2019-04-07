@@ -29,11 +29,11 @@ inline int16_t oki_step(uint8_t step, int16_t* history, uint8_t* step_hist)
 		-1,-1,-1,-1,2,4,6,8
 	};
 	uint16_t step_size = step_table[*step_hist];
-	int16_t delta = step_size >> 4;
+	int16_t delta = step_size >> 3;
 	if(step & 1)
-		delta += step_size >> 3;
-	if(step & 2)
 		delta += step_size >> 2;
+	if(step & 2)
+		delta += step_size >> 1;
 	if(step & 4)
 		delta += step_size;
 	if(step & 8)
