@@ -22,27 +22,21 @@ static const uint16_t yma_step_table[49] = {
 	724,796,876,963,1060,1166,1282,1411,1552
 };
 
-static const int8_t yma_adjust_table[8] = {
-	-1,-1,-1,-1,2,5,7,9
-};
-
 // *** Yamaha ADPCM-A ***
 inline int16_t yma_step(uint8_t step, int16_t* history, uint8_t* step_hist)
 {
+	static const int8_t delta_table[16] = {
+		1,3,5,7,9,11,13,15, -1,-3,-5,-7,-9,-11,-13,-15
+	};
+	static const int8_t adjust_table[8] = {
+		-1,-1,-1,-1,2,5,7,9
+	};
 	uint16_t step_size = yma_step_table[*step_hist];
-	int16_t delta = step_size >> 3;
-	if(step & 1)
-		delta += step_size >> 2;
-	if(step & 2)
-		delta += step_size >> 1;
-	if(step & 4)
-		delta += step_size;
-	if(step & 8)
-		delta = -delta;
+	int16_t delta = delta_table[step & 15] * step_size / 8;
 	int16_t out = (*history + delta) & 0xfff; // No saturation
 	out |= (out & 0x800) ? ~0xfff : 0;
 	*history = out;
-	int8_t adjusted_step = *step_hist + yma_adjust_table[step & 7]; // Different adjust table
+	int8_t adjusted_step = *step_hist + adjust_table[step & 7]; // Different adjust table
 	*step_hist = CLAMP(adjusted_step, 0, 48);
 
 	return out;

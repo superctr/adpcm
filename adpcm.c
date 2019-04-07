@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "adpcm_codec.h"
 #include "oki_codec.h"
 #include "yma_codec.h"
 #include "ymb_codec.h"
