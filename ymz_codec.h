@@ -15,13 +15,13 @@
  * return encoded ADPCM samples in outbuffer.
  * Output buffer should be at least (len/2) elements large.
  */
-void ct_encode(int16_t *buffer,uint8_t *outbuffer,long len);
+void ymz_encode(int16_t *buffer,uint8_t *outbuffer,long len);
 
 /**
  * Given ADPCM samples in (buffer), return (len) amount of
  * decoded PCM samples in (outbuffer).
  * Output buffer should be at least (len*2) elements large.
  */
-void ct_decode(uint8_t *buffer,int16_t *outbuffer,long len);
+void ymz_decode(uint8_t *buffer,int16_t *outbuffer,long len);
 
 #endif

@@ -1,24 +1,19 @@
-/*
-	Build with
-	gcc -o adpcm adpcm.c bs_codec.c ct_codec.c oki_codec.c yma_codec.c ymb_codec.c
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
 #include "adpcm_codec.h"
-#include "ct_codec.h"
 #include "oki_codec.h"
 #include "yma_codec.h"
 #include "ymb_codec.h"
+#include "ymz_codec.h"
 
 void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 {
 	if(adpcm_mode == 0)
 		bs_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 1)
-		ct_encode((int16_t*)source,dest,length);
+		ymz_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 2)
 		oki_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 3)
@@ -34,7 +29,7 @@ void decode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 	if(adpcm_mode == 0)
 		bs_decode(source,(int16_t*)dest,length);
 	else if(adpcm_mode == 1)
-		ct_decode(source,(int16_t*)dest,length);
+		ymz_decode(source,(int16_t*)dest,length);
 	else if(adpcm_mode == 2)
 		oki_decode(source,(int16_t*)dest,length);
 	else if(adpcm_mode == 3)
