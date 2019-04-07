@@ -1,11 +1,11 @@
-#ifndef OKI_CODEC_H
-#define OKI_CODEC_H
+#ifndef YM_CODEC_H
+#define YM_CODEC_H
 
 /*
 	Encode and decode algorithms for
-	OKI ADPCM
+	Y8950/YM2608/YM2610 ADPCM-B
 	
-	2019 by superctr.
+	2018 by superctr.
 */
 
 #include <stdint.h>
@@ -15,15 +15,13 @@
  * return encoded ADPCM samples in outbuffer.
  * Output buffer should be at least (len/2) elements large.
  */
-void oki_encode(int16_t *buffer,uint8_t *outbuffer,long len);
-void yma_encode(int16_t *buffer,uint8_t *outbuffer,long len);
+void ym_encode(int16_t *buffer,uint8_t *outbuffer,long len);
 
 /**
  * Given ADPCM samples in (buffer), return (len) amount of
  * decoded PCM samples in (outbuffer).
  * Output buffer should be at least (len*2) elements large.
  */
-void oki_decode(uint8_t *buffer,int16_t *outbuffer,long len);
-void yma_decode(uint8_t *buffer,int16_t *outbuffer,long len);
+void ym_decode(uint8_t *buffer,int16_t *outbuffer,long len);
 
 #endif

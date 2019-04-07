@@ -1,7 +1,7 @@
 /*
 	Encode and decode algorithms for
-	YMZ280B ADPCM
-	
+	Y8950/YM2608/YM2610 ADPCM-B
+
 	2019 by superctr.
 */
 
@@ -13,17 +13,17 @@
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
-inline int16_t ct_step(uint8_t step, int16_t* history, int16_t* step_size)
+inline int16_t ym_step(uint8_t step, int16_t* history, int16_t* step_size)
 {
-	static const int ct_table[8] = {
-		230, 230, 230, 230, 307, 409, 512, 614
+	static const int ym_table[8] = {
+		57, 57, 57, 57, 77, 102, 128, 153
 	};
 
 	int sign = step & 8;
 	int delta = step & 7;
 	int diff = ((1+(delta<<1)) * *step_size) >> 3;
-	int newval = *history * 254 / 256;
-	int nstep = (ct_table[delta] * *step_size) >> 8;
+	int newval = *history;
+	int nstep = (ym_table[delta] * *step_size) >> 6;
 	if (sign > 0)
 		newval -= diff;
 	else
@@ -34,7 +34,7 @@ inline int16_t ct_step(uint8_t step, int16_t* history, int16_t* step_size)
 	return newval;
 }
 
-void ct_encode(int16_t *buffer,uint8_t *outbuffer,long len)
+void ym_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 {
 	long i;
 	int16_t step_size = 127;
@@ -55,11 +55,11 @@ void ct_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 		else
 			buf_sample = (adpcm_sample&15)<<4;
 		nibble^=1;
-		ct_step(adpcm_sample, &history, &step_size);
+		ym_step(adpcm_sample, &history, &step_size);
 	}
 }
 
-void ct_decode(uint8_t *buffer,int16_t *outbuffer,long len)
+void ym_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 {
 	long i;
 	
@@ -74,6 +74,6 @@ void ct_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 		if(nibble)
 			buffer++;
 		nibble^=4;
-		*outbuffer++ = ct_step(step, &history, &step_size);
+		*outbuffer++ = ym_step(step, &history, &step_size);
 	}
 }

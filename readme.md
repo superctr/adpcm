@@ -14,12 +14,16 @@ ADPCM encoder/decoder.
 
 | Command | Format | Description |
 | --- | --- | ---
-| bd      | Brian Schmidt | Decode |
-| be      | Brian Schmidt | Encode |
-| od      | OKI | Decode |
-| oe      | OKI | Encode |
-| yd      | Yamaha YMZ280B | Decode |
-| ye      | Yamaha YMZ280B | Encode |
+| ad      | Yamaha ADPCM-A (YM2610) | Decode |
+| ae      | Yamaha ADPCM-A (YM2610) | Encode |
+| bd      | Yamaha ADPCM-B (Y8950/YM2608/YM2610) | Decode |
+| be      | Yamaha ADPCM-B (Y8950/YM2608/YM2610) | Encode |
+| od      | Oki "VOX" (MSM6258/MSM6295) | Decode |
+| oe      | Oki "VOX" (MSM6258/MSM6295) | Encode |
+| sd      | Brian Schmidt (BSMT2000/QSound) | Decode |
+| se      | Brian Schmidt (BSMT2000/QSound) | Encode |
+| zd      | Yamaha/Creative (YMZ280B) | Decode |
+| ze      | Yamaha/Creative (YMZ280B) | Encode |
 
 #### Copyright
 

@@ -10,6 +10,7 @@
 #include "adpcm_codec.h"
 #include "ct_codec.h"
 #include "oki_codec.h"
+#include "ym_codec.h"
 
 void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 {
@@ -19,6 +20,10 @@ void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 		ct_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 2)
 		oki_encode((int16_t*)source,dest,length);
+	else if(adpcm_mode == 3)
+		yma_encode((int16_t*)source,dest,length);
+	else if(adpcm_mode == 4)
+		ym_encode((int16_t*)source,dest,length);
 	else
 		exit(-1);
 }
@@ -31,6 +36,10 @@ void decode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 		ct_decode(source,(int16_t*)dest,length);
 	else if(adpcm_mode == 2)
 		oki_decode(source,(int16_t*)dest,length);
+	else if(adpcm_mode == 3)
+		yma_decode(source,(int16_t*)dest,length);
+	else if(adpcm_mode == 4)
+		ym_decode(source,(int16_t*)dest,length);
 	else
 		exit(-1);
 }
@@ -46,7 +55,13 @@ int main(int argc, char* argv [])
 		
 	if(argc<4)
 	{
-		printf("Usage: <be|bd|ye|yd|oe|od> <file> <destination file> \n");
+		printf("Usage: <b|o|y|z><d|e> <file> <destination file> \n");
+		printf("List of codecs:\n");
+		printf("\ts - Brian Schmidt (BSMT2000 / QSound)\n");
+		printf("\to - Oki (MSM6258 / MSM6295)\n");
+		printf("\ta - Yamaha ADPCM-A (YM2610)\n");
+		printf("\tb - Yamaha ADPCM-B (Y8950 / YM2608 / YM2610)\n");
+		printf("\tz - Yamaha / Creative (YMZ280B)\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -80,13 +95,13 @@ int main(int argc, char* argv [])
 	int length;
 	int adpcm_mode = -1;
 
-	if(*mode == 'b')
+	if(*mode == 's')
 	{
 		adpcm_mode = 0;
 		printf("Using Brian Schmidt algorithm\n");
 		mode++;
 	}
-	else if(*mode == 'y')
+	else if(*mode == 'z')
 	{
 		adpcm_mode = 1;
 		printf("Using YMZ280B algorithm\n");
@@ -96,6 +111,18 @@ int main(int argc, char* argv [])
 	{
 		adpcm_mode = 2;
 		printf("Using OKI algorithm\n");
+		mode++;
+	}
+	else if(*mode == 'a')
+	{
+		adpcm_mode = 3;
+		printf("Using Yamaha ADPCM-A algorithm\n");
+		mode++;
+	}
+	else if(*mode == 'b')
+	{
+		adpcm_mode = 4;
+		printf("Using Yamaha ADPCM-B algorithm\n");
 		mode++;
 	}
 	else
