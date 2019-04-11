@@ -40,13 +40,13 @@ void ymz_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 	int16_t step_size = 127;
 	int16_t history = 0;
 	uint8_t buf_sample = 0, nibble = 0;
-	uint8_t adpcm_sample;
+	unsigned int adpcm_sample;
 
 	for(i=0;i<len;i++)
 	{
 		// we remove a few bits of accuracy to reduce some noise.
-		int16_t step = ((*buffer++) & 0xfff8) - history;
-		adpcm_sample = (abs(step<<16)) / (step_size<<14);
+		int step = ((*buffer++) & -8) - history;
+		adpcm_sample = (abs(step)<<16) / (step_size<<14);
 		adpcm_sample = CLAMP(adpcm_sample, 0, 7);
 		if(step < 0)
 			adpcm_sample |= 8;
