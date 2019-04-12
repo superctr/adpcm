@@ -1,7 +1,7 @@
 /*
 	Encode and decode algorithms for
-	YMZ280B ADPCM
-	
+	YMZ280B / AICA ADPCM
+
 	2019 by superctr.
 */
 
@@ -22,7 +22,7 @@ inline int16_t ymz_step(uint8_t step, int16_t* history, int16_t* step_size)
 	int sign = step & 8;
 	int delta = step & 7;
 	int diff = ((1+(delta<<1)) * *step_size) >> 3;
-	int newval = *history * 254 / 256;
+	int newval = *history;
 	int nstep = (ct_table[delta] * *step_size) >> 8;
 	if (sign > 0)
 		newval -= diff;
@@ -74,6 +74,7 @@ void ymz_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 		if(nibble)
 			buffer++;
 		nibble^=4;
+		history = history * 254 / 256;
 		*outbuffer++ = ymz_step(step, &history, &step_size);
 	}
 }

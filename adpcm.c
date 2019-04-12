@@ -57,7 +57,7 @@ int main(int argc, char* argv [])
 		printf("\to - Oki (MSM6258 / MSM6295)\n");
 		printf("\ta - Yamaha ADPCM-A (YM2610)\n");
 		printf("\tb - Yamaha ADPCM-B (Y8950 / YM2608 / YM2610)\n");
-		printf("\tz - Yamaha / Creative (YMZ280B)\n");
+		printf("\tz - Yamaha / Creative (YMZ280B / AICA)\n");
 		exit(EXIT_FAILURE);
 	}
 

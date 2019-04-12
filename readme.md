@@ -22,8 +22,8 @@ ADPCM encoder/decoder.
 | oe      | Oki "VOX" (MSM6258/MSM6295) | Encode |
 | sd      | Brian Schmidt (BSMT2000/QSound) | Decode |
 | se      | Brian Schmidt (BSMT2000/QSound) | Encode |
-| zd      | Yamaha/Creative (YMZ280B) | Decode |
-| ze      | Yamaha/Creative (YMZ280B) | Encode |
+| zd      | Yamaha/Creative (YMZ280B/AICA) | Decode |
+| ze      | Yamaha/Creative (YMZ280B/AICA) | Encode |
 
 #### Copyright
 
