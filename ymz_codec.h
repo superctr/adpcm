@@ -3,7 +3,7 @@
 
 /*
 	Encode and decode algorithms for
-	YMZ280B
+	YMZ280B / AICA
 	
 	2018 by superctr.
 */
@@ -16,6 +16,7 @@
  * Output buffer should be at least (len/2) elements large.
  */
 void ymz_encode(int16_t *buffer,uint8_t *outbuffer,long len);
+void aica_encode(int16_t *buffer,uint8_t *outbuffer,long len);
 
 /**
  * Given ADPCM samples in (buffer), return (len) amount of
@@ -23,5 +24,6 @@ void ymz_encode(int16_t *buffer,uint8_t *outbuffer,long len);
  * Output buffer should be at least (len*2) elements large.
  */
 void ymz_decode(uint8_t *buffer,int16_t *outbuffer,long len);
+void aica_decode(uint8_t *buffer,int16_t *outbuffer,long len);
 
 #endif

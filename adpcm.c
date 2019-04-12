@@ -20,6 +20,8 @@ void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 		yma_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 4)
 		ymb_encode((int16_t*)source,dest,length);
+	else if(adpcm_mode == 5)
+		aica_encode((int16_t*)source,dest,length);
 	else
 		exit(-1);
 }
@@ -36,6 +38,8 @@ void decode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 		yma_decode(source,(int16_t*)dest,length);
 	else if(adpcm_mode == 4)
 		ymb_decode(source,(int16_t*)dest,length);
+	else if(adpcm_mode == 5)
+		aica_decode(source,(int16_t*)dest,length);
 	else
 		exit(-1);
 }
@@ -57,7 +61,8 @@ int main(int argc, char* argv [])
 		printf("\to - Oki (MSM6258 / MSM6295)\n");
 		printf("\ta - Yamaha ADPCM-A (YM2610)\n");
 		printf("\tb - Yamaha ADPCM-B (Y8950 / YM2608 / YM2610)\n");
-		printf("\tz - Yamaha / Creative (YMZ280B / AICA)\n");
+		printf("\tc - Yamaha AICA (AICA)\n");
+		printf("\tz - Yamaha / Creative (YMZ280B)\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -119,6 +124,12 @@ int main(int argc, char* argv [])
 	{
 		adpcm_mode = 4;
 		printf("Using Yamaha ADPCM-B algorithm\n");
+		mode++;
+	}
+	else if(*mode == 'c')
+	{
+		adpcm_mode = 5;
+		printf("Using Yamaha AICA algorithm\n");
 		mode++;
 	}
 	else

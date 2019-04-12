@@ -15,7 +15,7 @@
 
 inline int16_t ymb_step(uint8_t step, int16_t* history, int16_t* step_size)
 {
-	static const int ym_table[8] = {
+	static const int step_table[8] = {
 		57, 57, 57, 57, 77, 102, 128, 153
 	};
 
@@ -23,7 +23,7 @@ inline int16_t ymb_step(uint8_t step, int16_t* history, int16_t* step_size)
 	int delta = step & 7;
 	int diff = ((1+(delta<<1)) * *step_size) >> 3;
 	int newval = *history;
-	int nstep = (ym_table[delta] * *step_size) >> 6;
+	int nstep = (step_table[delta] * *step_size) >> 6;
 	if (sign > 0)
 		newval -= diff;
 	else
