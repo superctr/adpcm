@@ -26,7 +26,9 @@ inline int16_t ymz_step(uint8_t step, int16_t* history, int16_t* step_size)
 	int diff = ((1+(delta<<1)) * *step_size) >> 3;
 	int newval = *history;
 	int nstep = (step_table[delta] * *step_size) >> 8;
-	diff = CLAMP(diff, 0, 32767); // AICA only?
+	// Only found in the official AICA encoder
+	// but it's possible all chips (including ADPCM-B) does this.
+	diff = CLAMP(diff, 0, 32767);
 	if (sign > 0)
 		newval -= diff;
 	else
