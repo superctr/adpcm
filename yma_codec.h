@@ -1,5 +1,5 @@
-#ifndef OKI_CODEC_H
-#define OKI_CODEC_H
+#ifndef YMA_CODEC_H
+#define YMA_CODEC_H
 
 /*
 	Encode and decode algorithms for
