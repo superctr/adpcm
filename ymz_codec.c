@@ -15,7 +15,7 @@
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
-inline int16_t ymz_step(uint8_t step, int16_t* history, int16_t* step_size)
+static inline int16_t ymz_step(uint8_t step, int16_t* history, int16_t* step_size)
 {
 	static const int step_table[8] = {
 		230, 230, 230, 230, 307, 409, 512, 614

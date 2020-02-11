@@ -1,5 +1,5 @@
-#ifndef ADPCM_CODEC_H
-#define ADPCM_CODEC_H
+#ifndef BS_CODEC_H
+#define BS_CODEC_H
 
 /*
 	Encode and decode algorithms for

@@ -14,7 +14,7 @@
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
 // step ADPCM algorithm
-inline int16_t bs_step(int8_t step, int16_t* history, int16_t* step_size)
+static inline int16_t bs_step(int8_t step, int16_t* history, int16_t* step_size)
 {
 	static const int16_t adpcm_table[16] = {
 		154, 154, 128, 102, 77, 58, 58, 58, // 2.4, 2.4, 2.0, 1.6, 1.2, 0.9, 0.9, 0.9
@@ -37,7 +37,7 @@ inline int16_t bs_step(int8_t step, int16_t* history, int16_t* step_size)
 }
 
 // step high pass filter
-inline int16_t bs_hpf_step(int16_t in, int16_t* history, int32_t *state)
+static inline int16_t bs_hpf_step(int16_t in, int16_t* history, int32_t *state)
 {
 	int32_t out;
 	*state = (*state>>2) + in - *history;

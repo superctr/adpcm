@@ -23,7 +23,7 @@ static const uint16_t yma_step_table[49] = {
 };
 
 // *** Yamaha ADPCM-A ***
-inline int16_t yma_step(uint8_t step, int16_t* history, uint8_t* step_hist)
+static inline int16_t yma_step(uint8_t step, int16_t* history, uint8_t* step_hist)
 {
 	static const int8_t delta_table[16] = {
 		1,3,5,7,9,11,13,15, -1,-3,-5,-7,-9,-11,-13,-15
@@ -42,7 +42,7 @@ inline int16_t yma_step(uint8_t step, int16_t* history, uint8_t* step_hist)
 	return out;
 }
 
-inline uint8_t yma_encode_step(int16_t input, int16_t* history, uint8_t *step_hist)
+static inline uint8_t yma_encode_step(int16_t input, int16_t* history, uint8_t *step_hist)
 {
 	int bit;
 	uint16_t step_size = yma_step_table[*step_hist];
