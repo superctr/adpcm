@@ -1,9 +1,11 @@
 /*
 	Encode and decode algorithms for
 	OKI ADPCM
-	
-	2019 by superctr.
+
+	2019-2022 by superctr.
 */
+
+//#define OKI_MSM6258 // Enable highpass filtering.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,8 +34,21 @@ static inline int16_t oki_step(uint8_t step, int16_t* history, uint8_t* step_his
 	};
 
 	uint16_t step_size = oki_step_table[*step_hist];
-	int16_t delta = delta_table[step & 15] * step_size / 8;
+	int16_t delta = step_size >> 3;
+	if(step & 1)
+		delta += step_size >> 2;
+	if(step & 2)
+		delta += step_size >> 1;
+	if(step & 4)
+		delta += step_size;
+	if(step & 8)
+		delta = -delta;
+
+#ifdef OKI_MSM6258
+	int32_t out = ((delta << 8) + (*history * 245)) >> 8;
+#else
 	int16_t out = *history + delta;
+#endif
 	*history = out = CLAMP(out, -2048, 2047); // Saturate output
 	int8_t adjusted_step = *step_hist + adjust_table[step & 7];
 	*step_hist = CLAMP(adjusted_step, 0, 48);
@@ -54,12 +69,12 @@ static inline uint8_t oki_encode_step(int16_t input, int16_t* history, uint8_t *
 	{
 		if(delta >= step_size)
 		{
-			adpcm_sample |= (1<<bit);
+			adpcm_sample |= (1 << bit);
 			delta -= step_size;
 		}
 		step_size >>= 1;
 	}
-	oki_step(adpcm_sample,history,step_hist);
+	oki_step(adpcm_sample, history, step_hist);
 	return adpcm_sample;
 }
 
@@ -70,7 +85,7 @@ void oki_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 	int16_t history = 0;
 	uint8_t step_hist = 0;
 	uint8_t buf_sample = 0, nibble = 0;
-	
+
 	for(i=0;i<len;i++)
 	{
 		int16_t sample = *buffer++;
@@ -93,10 +108,10 @@ void oki_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 	int16_t history = 0;
 	uint8_t step_hist = 0;
 	uint8_t nibble = 0;
-	
+
 	for(i=0;i<len;i++)
 	{
-		int8_t step = (*(int8_t*)buffer)<<nibble;
+		int8_t step = (*(int8_t*)buffer) << nibble;
 		step >>= 4;
 		if(nibble)
 			buffer++;
@@ -104,4 +119,3 @@ void oki_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 		*outbuffer++ = oki_step(step, &history, &step_hist) << 4;
 	}
 }
-
