@@ -20,10 +20,12 @@ ADPCM encoder/decoder.
 | be      | Yamaha ADPCM-B (Y8950/YM2608/YM2610) | Encode |
 | cd      | Yamaha AICA (AICA) | Decode |
 | ce      | Yamaha AICA (AICA) | Encode |
-| od      | Oki "VOX" (MSM6258/MSM6295) | Decode |
-| oe      | Oki "VOX" (MSM6258/MSM6295) | Encode |
+| od      | Oki/Dialogic "VOX" (MSM6295) | Decode |
+| oe      | Oki/Dialogic "VOX" (MSM6295) | Encode |
 | sd      | Brian Schmidt (BSMT2000/QSound) | Decode |
 | se      | Brian Schmidt (BSMT2000/QSound) | Encode |
+| xd      | Oki X68000 (MSM6258) | Decode |
+| xe      | Oki X68000 (MSM6258) | Encode |
 | zd      | Yamaha/Creative (YMZ280B) | Decode |
 | ze      | Yamaha/Creative (YMZ280B) | Encode |
 
@@ -32,7 +34,7 @@ ADPCM encoder/decoder.
 | File | Prefix | Description |
 | --- | --- | --- |
 | bs_codec.[c/h] | bs_ | BSMT2000/QSound |
-| oki_codec.[c/h] | oki_ | Oki/Dialogic/VOX |
+| oki_codec.[c/h] | oki_, oki6258_ | Oki/Dialogic/VOX |
 | yma_codec.[c/h] | yma_ | ADPCM-A |
 | ymb_codec.[c/h] | ymb_ | ADPCM-B |
 | ymz_codec.[c/h] | ymz_, aica_ | YMZ280B, AICA |

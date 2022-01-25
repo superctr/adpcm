@@ -4,8 +4,13 @@
 /*
 	Encode and decode algorithms for
 	OKI ADPCM
-	
-	2019 by superctr.
+
+	Only difference between MSM6295 and MSM6258 is that the nibbles are swapped.
+	MSM6295 reads from MSB to LSB. MSM6258 reads from LSB to MSB.
+
+	Dialogic 'VOX' PCM reads from MSB to LSB, therefore should use the MSM6295 functions.
+
+	2019-2022 by superctr.
 */
 
 #include <stdint.h>
@@ -16,6 +21,7 @@
  * Output buffer should be at least (len/2) elements large.
  */
 void oki_encode(int16_t *buffer,uint8_t *outbuffer,long len);
+void oki6258_encode(int16_t *buffer,uint8_t *outbuffer,long len);
 
 /**
  * Given ADPCM samples in (buffer), return (len) amount of
@@ -23,5 +29,6 @@ void oki_encode(int16_t *buffer,uint8_t *outbuffer,long len);
  * Output buffer should be at least (len*2) elements large.
  */
 void oki_decode(uint8_t *buffer,int16_t *outbuffer,long len);
+void oki6258_decode(uint8_t *buffer,int16_t *outbuffer,long len);
 
 #endif

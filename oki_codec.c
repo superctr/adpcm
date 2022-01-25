@@ -2,10 +2,15 @@
 	Encode and decode algorithms for
 	OKI ADPCM
 
+	Only difference between MSM6295 and MSM6258 is that the nibbles are swapped.
+	MSM6295 reads from MSB to LSB. MSM6258 reads from LSB to MSB.
+
+	Dialogic 'VOX' PCM reads from MSB to LSB, therefore should use the MSM6295 functions.
+
 	2019-2022 by superctr.
 */
 
-//#define OKI_MSM6258 // Enable highpass filtering.
+//#define OKI_HIGHPASS // Enable highpass filtering. Useful for files containing multiple samples.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +49,7 @@ static inline int16_t oki_step(uint8_t step, int16_t* history, uint8_t* step_his
 	if(step & 8)
 		delta = -delta;
 
-#ifdef OKI_MSM6258
+#ifdef OKI_HIGHPASS
 	int32_t out = ((delta << 8) + (*history * 245)) >> 8;
 #else
 	int16_t out = *history + delta;
@@ -114,6 +119,48 @@ void oki_decode(uint8_t *buffer,int16_t *outbuffer,long len)
 		int8_t step = (*(int8_t*)buffer) << nibble;
 		step >>= 4;
 		if(nibble)
+			buffer++;
+		nibble^=4;
+		*outbuffer++ = oki_step(step, &history, &step_hist) << 4;
+	}
+}
+
+void oki6258_encode(int16_t *buffer,uint8_t *outbuffer,long len)
+{
+	long i;
+
+	int16_t history = 0;
+	uint8_t step_hist = 0;
+	uint8_t buf_sample = 0, nibble = 0;
+
+	for(i=0;i<len;i++)
+	{
+		int16_t sample = *buffer++;
+		if(sample < 0x7ff8) // round up
+			sample += 8;
+		sample >>= 4;
+		int step = oki_encode_step(sample, &history, &step_hist);
+		if(nibble)
+			*outbuffer++ = buf_sample | ((step&15)<<4);
+		else
+			buf_sample = step&15;
+		nibble^=1;
+	}
+}
+
+void oki6258_decode(uint8_t *buffer,int16_t *outbuffer,long len)
+{
+	long i;
+
+	int16_t history = 0;
+	uint8_t step_hist = 0;
+	uint8_t nibble = 4;
+
+	for(i=0;i<len;i++)
+	{
+		int8_t step = (*(int8_t*)buffer) << nibble;
+		step >>= 4;
+		if(!nibble)
 			buffer++;
 		nibble^=4;
 		*outbuffer++ = oki_step(step, &history, &step_hist) << 4;

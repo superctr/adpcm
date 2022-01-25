@@ -17,10 +17,12 @@ void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 	else if(adpcm_mode == 2)
 		oki_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 3)
-		yma_encode((int16_t*)source,dest,length);
+		oki6258_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 4)
-		ymb_encode((int16_t*)source,dest,length);
+		yma_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 5)
+		ymb_encode((int16_t*)source,dest,length);
+	else if(adpcm_mode == 6)
 		aica_encode((int16_t*)source,dest,length);
 	else
 		exit(-1);
@@ -35,10 +37,12 @@ void decode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 	else if(adpcm_mode == 2)
 		oki_decode(source,(int16_t*)dest,length);
 	else if(adpcm_mode == 3)
-		yma_decode(source,(int16_t*)dest,length);
+		oki6258_decode(source,(int16_t*)dest,length);
 	else if(adpcm_mode == 4)
-		ymb_decode(source,(int16_t*)dest,length);
+		yma_decode(source,(int16_t*)dest,length);
 	else if(adpcm_mode == 5)
+		ymb_decode(source,(int16_t*)dest,length);
+	else if(adpcm_mode == 6)
 		aica_decode(source,(int16_t*)dest,length);
 	else
 		exit(-1);
@@ -50,15 +54,16 @@ int main(int argc, char* argv [])
 	unsigned long i;
 
 	printf("PCM <-> ADPCM conversion tool\n");
-	printf("2018-2019 by ctr\n");
+	printf("2018-2022 by ctr\n");
 	printf("Input format: signed 16 bit PCM little endian\n");
-		
+
 	if(argc<4)
 	{
-		printf("Usage: <b|o|y|z><d|e> <file> <destination file> \n");
+		printf("Usage: <s|o|x|a|b|c|z><d|e> <file> <destination file> \n");
 		printf("List of codecs:\n");
 		printf("\ts - Brian Schmidt (BSMT2000 / QSound)\n");
-		printf("\to - Oki (MSM6258 / MSM6295)\n");
+		printf("\to - Oki/Dialogic VOX (MSM6295)\n");
+		printf("\tx - Oki X68000 (MSM6258)\n");
 		printf("\ta - Yamaha ADPCM-A (YM2610)\n");
 		printf("\tb - Yamaha ADPCM-B (Y8950 / YM2608 / YM2610)\n");
 		printf("\tc - Yamaha AICA (AICA)\n");
@@ -105,30 +110,36 @@ int main(int argc, char* argv [])
 	else if(*mode == 'z')
 	{
 		adpcm_mode = 1;
-		printf("Using YMZ280B algorithm\n");
+		printf("Using Yamaha YMZ280B algorithm\n");
 		mode++;
 	}
 	else if(*mode == 'o')
 	{
 		adpcm_mode = 2;
-		printf("Using OKI algorithm\n");
+		printf("Using OKI/Dialogic VOX (MSM6295) algorithm\n");
+		mode++;
+	}
+	else if(*mode == 'x')
+	{
+		adpcm_mode = 3;
+		printf("Using OKI X68000 (MSM6258) algorithm\n");
 		mode++;
 	}
 	else if(*mode == 'a')
 	{
-		adpcm_mode = 3;
+		adpcm_mode = 4;
 		printf("Using Yamaha ADPCM-A algorithm\n");
 		mode++;
 	}
 	else if(*mode == 'b')
 	{
-		adpcm_mode = 4;
+		adpcm_mode = 5;
 		printf("Using Yamaha ADPCM-B algorithm\n");
 		mode++;
 	}
 	else if(*mode == 'c')
 	{
-		adpcm_mode = 5;
+		adpcm_mode = 6;
 		printf("Using Yamaha AICA algorithm\n");
 		mode++;
 	}
@@ -147,7 +158,7 @@ int main(int argc, char* argv [])
 		encode(source,dest,length,adpcm_mode);
 		length /= 2;
 	}
-	
+
 	else if(*mode == 'd')
 	{
 		length = sourcefile_size*2;
