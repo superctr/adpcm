@@ -89,7 +89,7 @@ void aica_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 	long i;
 	int16_t step_size = 127;
 	int16_t history = 0;
-	uint8_t buf_sample = 0, nibble = 4;
+	uint8_t buf_sample = 0, nibble = 0;
 	unsigned int adpcm_sample;
 
 	for(i=0;i<len;i++)
@@ -101,9 +101,9 @@ void aica_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 		if(step < 0)
 			adpcm_sample |= 8;
 		if(!nibble)
-			*outbuffer++ = buf_sample | (adpcm_sample&15);
+			*outbuffer++ = buf_sample | (adpcm_sample<<4);
 		else
-			buf_sample = (adpcm_sample&15)<<4;
+			buf_sample = (adpcm_sample&15);
 		nibble^=1;
 		ymz_step(adpcm_sample, &history, &step_size);
 	}

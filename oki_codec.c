@@ -67,8 +67,6 @@ static inline uint8_t oki_encode_step(int16_t input, int16_t* history, uint8_t *
 	uint16_t step_size = oki_step_table[*step_hist];
 	int16_t delta = input - *history;
 	uint8_t adpcm_sample = (delta < 0) ? 8 : 0;
-	if(delta < 0)
-		adpcm_sample = 8;
 	delta = abs(delta);
 	for(bit=3; bit--; )
 	{
