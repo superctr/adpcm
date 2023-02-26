@@ -31,9 +31,6 @@ static const uint16_t oki_step_table[49] = {
 
 static inline int16_t oki_step(uint8_t step, int16_t* history, uint8_t* step_hist)
 {
-	static const int8_t delta_table[16] = {
-		1,3,5,7,9,11,13,15, -1,-3,-5,-7,-9,-11,-13,-15
-	};
 	static const int8_t adjust_table[8] = {
 		-1,-1,-1,-1,2,4,6,8
 	};
