@@ -42,14 +42,14 @@ static inline int16_t yma_step(uint8_t step, int16_t* history, uint8_t* step_his
 	return out;
 }
 
-static inline uint8_t yma_encode_step(int16_t input, int16_t* history, uint8_t *step_hist)
+static inline uint8_t yma_encode_step(int16_t input, int16_t* history, uint8_t *step_hist, uint8_t anti_overflow)
 {
 	int bit;
+	int16_t prev_hist = *history;
+	uint8_t prev_step = *step_hist;
 	uint16_t step_size = yma_step_table[*step_hist];
 	int16_t delta = input - *history;
 	uint8_t adpcm_sample = (delta < 0) ? 8 : 0;
-	if(delta < 0)
-		adpcm_sample = 8;
 	delta = abs(delta);
 	for(bit=3; bit--; )
 	{
@@ -60,11 +60,29 @@ static inline uint8_t yma_encode_step(int16_t input, int16_t* history, uint8_t *
 		}
 		step_size >>= 1;
 	}
+
 	yma_step(adpcm_sample,history,step_hist);
+
+	if (anti_overflow)
+	{
+		int dsign_target = (input < prev_hist) ? -1 : 1;
+		int dsign_new = (*history < prev_hist) ? -1 : 1;
+		// When the sign of the targetted and effective delta is different, we got an overflow.
+		if (dsign_target != dsign_new)
+		{
+			if ((adpcm_sample & 0x07) > 0)
+				adpcm_sample --;	// use lower ADPCM delta
+			else
+				adpcm_sample ^= 8;	// can't go lower - swap sign instead
+			*history = prev_hist;
+			*step_hist = prev_step;
+			yma_step(adpcm_sample,history,step_hist);
+		}
+	}
 	return adpcm_sample;
 }
 
-void yma_encode(int16_t *buffer,uint8_t *outbuffer,long len)
+void yma_encode(int16_t *buffer,uint8_t *outbuffer,long len, uint8_t anti_overflow)
 {
 	long i;
 
@@ -78,7 +96,7 @@ void yma_encode(int16_t *buffer,uint8_t *outbuffer,long len)
 		if(sample < 0x7ff8) // round up
 			sample += 8;
 		sample >>= 4;
-		int step = yma_encode_step(sample, &history, &step_hist);
+		int step = yma_encode_step(sample, &history, &step_hist, anti_overflow);
 		if(nibble)
 			*outbuffer++ = buf_sample | (step&15);
 		else
