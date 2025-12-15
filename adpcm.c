@@ -8,7 +8,7 @@
 #include "ymb_codec.h"
 #include "ymz_codec.h"
 
-void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
+void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode,uint8_t anti_overflow)
 {
 	if(adpcm_mode == 0)
 		bs_encode((int16_t*)source,dest,length);
@@ -19,7 +19,7 @@ void encode(uint8_t *source,uint8_t *dest,long length,int adpcm_mode)
 	else if(adpcm_mode == 3)
 		oki6258_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 4)
-		yma_encode((int16_t*)source,dest,length);
+		yma_encode((int16_t*)source,dest,length,anti_overflow);
 	else if(adpcm_mode == 5)
 		ymb_encode((int16_t*)source,dest,length);
 	else if(adpcm_mode == 6)
@@ -59,7 +59,9 @@ int main(int argc, char* argv [])
 
 	if(argc<4)
 	{
-		printf("Usage: <s|o|x|a|b|c|z><d|e> <file> <destination file> \n");
+		printf("Usage: [-a] <s|o|x|a|b|c|z><d|e> <file> <destination file>\n");
+		printf("List of options:\n");
+		printf("\t-a - enable anti-overflow mode (for Yamaha ADPCM-A encoding)\n");
 		printf("List of codecs:\n");
 		printf("\ts - Brian Schmidt (BSMT2000 / QSound)\n");
 		printf("\to - Oki/Dialogic VOX (MSM6295)\n");
@@ -68,12 +70,37 @@ int main(int argc, char* argv [])
 		printf("\tb - Yamaha ADPCM-B (Y8950 / YM2608 / YM2610)\n");
 		printf("\tc - Yamaha AICA (AICA)\n");
 		printf("\tz - Yamaha / Creative (YMZ280B)\n");
+		printf("List of methods:\n");
+		printf("\td - decode (ADPCM -> PCM)\n");
+		printf("\te - encode (PCM -> ADPCM)\n");
 		exit(EXIT_FAILURE);
 	}
 
-	char* mode = argv[1];
-	char* file1 = argv[2];
-	char* file2 = argv[3];
+	uint8_t anti_overflow = 0;
+
+	int arg_id = 1;
+	while(arg_id < argc && argv[arg_id][0] == '-')
+	{
+		if (!strcmp(argv[arg_id], "-a"))
+		{
+			anti_overflow = 1;
+			arg_id++;
+		}
+		else
+		{
+			printf("Unknown option: %d\n", argv[arg_id]);
+			exit(EXIT_FAILURE);
+		}
+	}
+	if (argc < arg_id + 3)
+	{
+		printf("Insufficient arguments\n");
+		exit(EXIT_FAILURE);
+	}
+
+	char* mode = argv[arg_id + 0];
+	char* file1 = argv[arg_id + 1];
+	char* file2 = argv[arg_id + 2];
 
 	int res;
 
@@ -155,7 +182,7 @@ int main(int argc, char* argv [])
 		if(length & 1)
 			length++;	// make the size even
 		printf("encoding... (len= %d)\n",length);
-		encode(source,dest,length,adpcm_mode);
+		encode(source,dest,length,adpcm_mode,anti_overflow);
 		length /= 2;
 	}
 

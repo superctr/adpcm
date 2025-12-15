@@ -14,8 +14,9 @@
  * Given (len) amount of PCM samples in buffer,
  * return encoded ADPCM samples in outbuffer.
  * Output buffer should be at least (len/2) elements large.
+ * Set anti_overflow to 1 to prevent overflows in the encoded data.
  */
-void yma_encode(int16_t *buffer,uint8_t *outbuffer,long len);
+void yma_encode(int16_t *buffer,uint8_t *outbuffer,long len, uint8_t anti_overflow);
 
 /**
  * Given ADPCM samples in (buffer), return (len) amount of
